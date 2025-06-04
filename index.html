@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversor Binário/Decimal</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007BFF">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --text-color: #333;
+      --container-bg: #ffffff;
+      --button-bg: #007BFF;
+      --button-text: #ffffff;
+      --button-alt-bg: #6c757d;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --container-bg: #1e1e1e;
+      --button-bg: #2196F3;
+      --button-text: #ffffff;
+      --button-alt-bg: #444;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: var(--container-bg);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input[type="text"] {
+      padding: 12px;
+      font-size: 18px;
+      width: 100%;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    select {
+      padding: 12px;
+      font-size: 16px;
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px;
+      font-size: 16px;
+      background: var(--button-bg); color: var(--button-text);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      flex: 1;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    button:last-child {
+      background: var(--button-alt-bg);
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div style="text-align:right; margin-bottom:10px;">
+    <button onclick="toggleTheme()" style="background:none;border:none;color:var(--text-color);cursor:pointer;">🌓 Alternar Tema</button>
+  </div>
+
+  <h2>Conversor Binário ⇄ Decimal</h2>
+  <input type="text" id="inputNumero" placeholder="Digite o número" inputmode="numeric" pattern="\d*">
+  <select id="modo">
+    <option value="binToDec">Binário → Decimal</option>
+    <option value="decToBin">Decimal → Binário</option>
+  </select>
+  <div class="buttons">
+    <button onclick="converter()">Converter</button>
+    <button onclick="resetar()">Limpar</button>
+  </div>
+  <div class="result" id="resultado"></div>
+</div>
+<script>
+  const input = document.getElementById('inputNumero');
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/\D/g, '');
+  });
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const texto = e.clipboardData.getData('text').replace(/\D/g, '');
+    document.execCommand('insertText', false, texto);
+  });
+  function converter() {
+    const numero = input.value;
+    const modo = document.getElementById('modo').value;
+    const resultado = document.getElementById('resultado');
+    if (numero === '') {
+      resultado.textContent = 'Digite um número válido.';
+      return;
+    }
+    if (modo === 'binToDec') {
+      if (!/^[01]+$/.test(numero)) {
+        resultado.textContent = 'Número binário inválido (apenas 0 e 1).';
+        return;
+      }
+      resultado.textContent = `Decimal: ${parseInt(numero, 2)}`;
+    } else {
+      resultado.textContent = `Binário: ${parseInt(numero, 10).toString(2)}`;
+    }
+  }
+  function resetar() {
+    input.value = '';
+    document.getElementById('resultado').textContent = '';
+    input.focus();
+  }
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker registrado com sucesso'))
+      .catch(err => console.error('Erro ao registrar o Service Worker', err));
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  }
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark');
+  }
+
+</script>
+</body>
+</html>
